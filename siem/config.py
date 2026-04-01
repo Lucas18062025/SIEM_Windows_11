@@ -190,9 +190,7 @@ class SIEMConfig:
     def _load_contact(self) -> None:
         """Carga sección 'contact' de la config."""
         contact = self._raw.get("contact", {})
-        self.contact_nombre: str = contact.get("nombre", "Operador SIEM")
-        self.contact_cel: str = contact.get("cel", "")
-        self.contact_email: str = contact.get("email", "")
+        self.contact_nombre: str = contact.get("nombre", "Lucas Villagra")
         self.contact_portfolio: str = contact.get("portfolio", "")
         self.contact_linkedin: str = contact.get("linkedin", "")
 

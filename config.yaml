@@ -59,7 +59,5 @@ monitoring:
 # ── Contacto (información del operador) ──────────────────
 contact:
   nombre: "Lucas Villagra"
-  cel: "+54 381 476-4474"
-  email: "tu.email@ejemplo.com"
   portfolio: "https://lucas18062025.github.io/Portafolio/"
   linkedin: "https://www.linkedin.com/in/lucas-villagra-9b5097147/"
