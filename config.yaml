@@ -1,0 +1,65 @@
+# ═══════════════════════════════════════════════════════════
+# SIEM Personal v4.0 — Configuración
+# Desarrollado por: Lucas Villagra
+# ═══════════════════════════════════════════════════════════
+
+# ── Información del SIEM ──────────────────────────────────
+siem:
+  version: "4.0.0"
+  mode: "solo_lectura"            # El SIEM nunca modifica el host
+
+# ── Tiempos y ciclos ──────────────────────────────────────
+timing:
+  scan_interval_seconds: 10       # Segundos entre cada ciclo de escaneo
+  memory_window_seconds: 3600     # Ventana de memoria (1 hora)
+  cleanup_every_n_cycles: 10      # Cada cuántos ciclos limpiar memoria
+  max_events_in_memory: 50000     # Cap máximo de eventos en RAM
+
+# ── Telegram ──────────────────────────────────────────────
+telegram:
+  cooldown_per_type_seconds: 60   # Cooldown por tipo de evento
+  global_rate_limit_per_minute: 20 # Máximo de mensajes por minuto (global)
+  request_timeout_seconds: 5      # Timeout de cada request HTTP
+  max_retries: 3                  # Reintentos ante error
+
+# ── Logs ──────────────────────────────────────────────────
+logs:
+  directory: "Logs"               # Carpeta de logs generales
+  alerts_directory: "Alertas"     # Carpeta de alertas
+  rotation_days: 30               # Borrar logs más viejos que N días
+  max_file_size_mb: 50            # Rotar archivo si supera N MB
+  compress_old: true              # Comprimir logs rotados (.gz)
+  format: "text"                  # "text" o "json"
+
+# ── Monitoreo de eventos Windows ──────────────────────────
+monitoring:
+  event_logs:                     # Logs de Windows a monitorear
+    - "Security"
+    - "System"
+  events_per_read: 50             # Eventos a leer por ciclo
+
+  critical_events:                # IDs de eventos y su descripción
+    4625: "LOGIN FALLIDO"
+    4648: "Login con credenciales explícitas"
+    4719: "Política de auditoría modificada"
+    4720: "Cuenta de usuario creada"
+    4726: "Cuenta de usuario eliminada"
+    4740: "Cuenta bloqueada"
+    7031: "Servicio detenido inesperadamente"
+    7036: "Cambio de estado en servicio"
+    1102: "Log de auditoría BORRADO"
+
+  alert_events:                   # IDs que disparan alerta a Telegram
+    - 4625
+    - 4740
+    - 1102
+    - 4719
+    - 4726
+
+# ── Contacto (información del operador) ──────────────────
+contact:
+  nombre: "Lucas Villagra"
+  cel: "+54 381 476-4474"
+  email: "tu.email@ejemplo.com"
+  portfolio: "https://lucas18062025.github.io/Portafolio/"
+  linkedin: "https://www.linkedin.com/in/lucas-villagra-9b5097147/"
