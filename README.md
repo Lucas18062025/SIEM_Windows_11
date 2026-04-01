@@ -216,7 +216,7 @@ El desarrollador no se responsabiliza por el uso indebido de este software.
 
 ## 👤 Operador
 
-**Lucas Villagra** — Cybersecurity Student · Red Team / Blue Team · NOA, Argentina
+**Lucas Villagra** — Cybersecurity Analyst, Ethical Hacker Student · Red Team / Blue Team · NOA, Argentina
 
 [![Portfolio](https://img.shields.io/badge/Portfolio-lucas18062025.github.io-0f172a?style=flat-square&logo=github)](https://lucas18062025.github.io/Portafolio/)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-lucas--villagra-0a66c2?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/lucas-villagra-9b5097147/)
