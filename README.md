@@ -1,4 +1,4 @@
-# 🛡️ SIEM Personal v4.0 — Windows Security Monitor
+# 🛡️ SIEM  v4.0 — Windows Security Monitor
 
 [![Python](https://img.shields.io/badge/python-3.10%2B-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078d4?style=flat-square&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
