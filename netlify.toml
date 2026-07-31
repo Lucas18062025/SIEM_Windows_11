@@ -1,0 +1,15 @@
+[build]
+  base = "netlify-site"
+  command = "echo 'Static project page ready'"
+  publish = "."
+
+[build.environment]
+  PYTHON_VERSION = "3.13"
+
+[[headers]]
+  for = "/*"
+
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
