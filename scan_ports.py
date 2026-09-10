@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 CONTACT_NOMBRE = os.getenv("CONTACT_NOMBRE", "Lucas Villagra")
-CONTACT_PORTFOLIO = os.getenv("CONTACT_PORTFOLIO", "https://lucas18062025.github.io/Portafolio/")
+CONTACT_PORTFOLIO = os.getenv("CONTACT_PORTFOLIO", "https://portafolio.lucaslean1806.workers.dev/")
 CONTACT_LINKEDIN = os.getenv("CONTACT_LINKEDIN", "https://www.linkedin.com/in/lucas-villagra-9b5097147/")
 
 def banner(ip: str) -> None:
