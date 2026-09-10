@@ -41,7 +41,7 @@ load_dotenv()
 # ── Contacto (desde .env) ────────────────────────────────────
 CONTACTO = {
     "nombre"   : os.getenv("CONTACT_NOMBRE",    "Lucas Villagra"),
-    "portfolio": os.getenv("CONTACT_PORTFOLIO", "https://lucas18062025.github.io/Portafolio/"),
+    "portfolio": os.getenv("CONTACT_PORTFOLIO", "https://portafolio.lucaslean1806.workers.dev/"),
     "linkedin" : os.getenv("CONTACT_LINKEDIN",  "https://www.linkedin.com/in/lucas-villagra-9b5097147/"),
 }
 
