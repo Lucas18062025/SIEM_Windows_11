@@ -1,11 +1,11 @@
-# ═══════════════════════════════════════════════════════════
-# SIEM Personal v4.0 — .gitignore
-# ═══════════════════════════════════════════════════════════
+# ===========================================
+# SIEM Personal v4.0 - .gitignore
+# ===========================================
 
-# 🔒 Secrets — NUNCA subir a GitHub
+# Secrets - NUNCA subir a GitHub
 .env
 
-# 🐍 Python
+# Python
 __pycache__/
 .venv/
 *.pyc
@@ -15,20 +15,20 @@ __pycache__/
 dist/
 build/
 
-# 📁 Datos generados en runtime
+# Datos generados en runtime
 Logs/
 Alertas/
 cache_cve.json
 reporte_*.json
 
-# 🖥️ IDE / Editor
+# IDE / Editor
 .vscode/settings.json
 *.swp
 *.swo
 *~
 .idea/
 
-# 💻 OS
+# OS
 Thumbs.db
 Desktop.ini
 .DS_Store
