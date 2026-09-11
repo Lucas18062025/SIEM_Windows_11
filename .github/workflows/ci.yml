@@ -20,5 +20,15 @@ jobs:
         run: pip install -r requirements.txt
       - name: Compile check
         run: python -m compileall -q siem verify_siem.py siem_consola.py scan_ports.py vuln_hp.py
+      - name: Create dummy .env for CI
+        shell: python
+        run: |
+          from pathlib import Path
+          Path(".env").write_text(
+              "TELEGRAM_TOKEN=1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZabcd\n"
+              "TELEGRAM_CHAT_ID=123456789\n"
+              "NVD_API_KEY=ci-dummy-key\n",
+              encoding="utf-8",
+          )
       - name: Verify SIEM
         run: python verify_siem.py
