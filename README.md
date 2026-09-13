@@ -3,8 +3,8 @@
 [![Python](https://img.shields.io/badge/python-3.10%2B-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078d4?style=flat-square&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
 [![License](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](LICENSE)
-[![Status](https://img.shields.io/badge/status-active-22c55e?style=flat-square)]()
-[![CVSS](https://img.shields.io/badge/scoring-CVSS%20v3.1-dc2626?style=flat-square)]()
+[![Status](https://img.shields.io/badge/status-active-22c55e?style=flat-square)](CHANGELOG.md)
+[![CVSS](https://img.shields.io/badge/scoring-CVSS%20v3.1-dc2626?style=flat-square)](https://nvd.nist.gov/vuln-metrics/cvss)
 [![NVD](https://img.shields.io/badge/database-NVD%20%2F%20NIST-1d4ed8?style=flat-square)](https://nvd.nist.gov/)
 
 > **SIEM ligero para Windows 11** con detección de eventos en tiempo real, alertas Telegram, clasificación de riesgo CVSS y consulta automática de CVEs contra la NVD. Diseñado para entornos de auditoría, homelab y Blue Team operations.
@@ -79,8 +79,10 @@
 
 ### `scan_ports.py` — Escáner Rápido de Red
 
-- Escaneo concurrente de puertos 1-1024 con `ThreadPoolExecutor`
-- Optimizado para bajo impacto en redes locales
+- Escaneo concurrente de puertos 1-1024 con `ThreadPoolExecutor` (50 hilos, timeout 1s)
+- Bajo impacto en redes locales — evita falsos cerrados y carga contra routers hogareños
+- Acepta IP o hostname (`localhost`, `router.lan`) con resolución automática
+- Salida `--json` para Splunk / ELK / scripts (`{"target","ip","open_ports"}`)
 
 ---
 
@@ -145,14 +147,15 @@ copy .env.example .env
 # ── SIEM Principal (monitoreo continuo)
 python siem_consola.py
 
-# ── Escanear puertos de un host
+# ── Escanear puertos de un host (IP o hostname)
 python scan_ports.py 192.168.1.1
+python scan_ports.py 192.168.1.1 --json   # salida JSON para Splunk/ELK
 
 # ── Análisis de vulnerabilidades + CVEs
 python vuln_hp.py 192.168.1.1
 
-# ── Verificar instalación
-python verify_siem.py
+# ── Verificar instalación (usar .venv o PYTHONUTF8=1 en consola Windows)
+.venv\Scripts\python.exe verify_siem.py
 ```
 
 **Para detener el SIEM:** `Ctrl+C` — shutdown limpio, el host no sufre cambios.
@@ -195,13 +198,17 @@ SIEM_Windows_11/
 │   ├── event_processor.py   # Procesamiento de eventos Windows
 │   ├── log_manager.py       # Rotación y escritura de logs
 │   └── notifier.py          # Integración Telegram
+├── netlify-site/            # Landing estática (deploy Netlify)
+├── .github/                 # Workflows CI
 ├── siem_consola.py          # Entry point del SIEM
 ├── vuln_hp.py               # Escáner de vulnerabilidades + CVEs
 ├── scan_ports.py            # Escáner rápido de puertos
 ├── verify_siem.py           # Verificación de instalación
 ├── config.yaml              # Configuración operacional
 ├── requirements.txt         # Dependencias Python
-├── .env.example             # Template de variables de entorno
+├── pyproject.toml           # Metadata del proyecto
+├── .env.example             # Template de variables de entorno (.env nunca se commitea)
+├── netlify.toml             # Config de deploy de la landing
 ├── .gitignore
 ├── CHANGELOG.md
 └── LICENSE

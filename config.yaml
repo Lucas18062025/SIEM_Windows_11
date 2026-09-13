@@ -59,5 +59,6 @@ monitoring:
 # ── Contacto (información del operador) ──────────────────
 contact:
   nombre: "Lucas Villagra"
+  email: "lucaslean1806@gmail.com"
   portfolio: "https://portafolio.lucaslean1806.workers.dev/"
   linkedin: "https://www.linkedin.com/in/lucas-villagra-cybersecurity/"
