@@ -59,6 +59,7 @@
 ## 🚀 Componentes
 
 ### `siem_consola.py` — Monitor de Eventos en Tiempo Real
+
 - Lectura de Windows Event Logs via `win32evtlog` (modo **solo lectura**, riesgo host: 0/10)
 - Detección de eventos críticos de seguridad (ver tabla completa abajo)
 - Alertas inmediatas por Telegram con rate limiting y cooldown por tipo de evento
@@ -67,6 +68,7 @@
 - Shutdown limpio via `SIGINT` / `SIGTERM` / `SIGBREAK` (Windows)
 
 ### `vuln_hp.py` — Clasificador de Riesgo y CVEs
+
 - Escaneo de servicios con `nmap -sV` (puertos 1-1024)
 - Consulta automática a la [NVD API v2.0](https://nvd.nist.gov/developers/vulnerabilities)
 - Scoring basado en **CVSS v3.1 real** (peor caso, no conteo de CVEs)
@@ -76,6 +78,7 @@
 - Exportación de reporte en formato **JSON** con metadata del operador
 
 ### `scan_ports.py` — Escáner Rápido de Red
+
 - Escaneo concurrente de puertos 1-1024 con `ThreadPoolExecutor`
 - Optimizado para bajo impacto en redes locales
 
@@ -84,7 +87,7 @@
 ## 🔍 Eventos Monitoreados
 
 | Event ID | Descripción | Severidad | Alerta Telegram |
-|----------|-------------|-----------|-----------------|
+| ---------- | ------------- | ----------- | ----------------- |
 | `4625` | Login fallido | 🔴 Alto | ✅ Sí |
 | `4648` | Login con credenciales explícitas | 🟠 Medio | ❌ No |
 | `4719` | Política de auditoría modificada | 🔴 Alto | ✅ Sí |
@@ -100,7 +103,7 @@
 ## 🛠️ Requisitos
 
 | Requisito | Versión | Notas |
-|-----------|---------|-------|
+| ----------- | --------- | ------- |
 | Windows | 10 / 11 | Requerido para `win32evtlog` |
 | Python | 3.10+ | Testado en 3.13 |
 | nmap | Cualquiera | Solo para `vuln_hp.py` — debe estar en `PATH` |
@@ -176,9 +179,9 @@ telegram:
 TELEGRAM_TOKEN=tu_token_aqui
 TELEGRAM_CHAT_ID=tu_chat_id
 NVD_API_KEY=tu_api_key_nvd
-CONTACT_NOMBRE=Tu Nombre
-CONTACT_PORTFOLIO=https://tu-portfolio.com
-CONTACT_LINKEDIN=https://linkedin.com/in/tu-perfil
+CONTACT_NOMBRE=Lucas Villagra
+CONTACT_PORTFOLIO=https://portafolio.lucaslean1806.workers.dev/
+CONTACT_LINKEDIN=https://www.linkedin.com/in/lucas-villagra-cybersecurity/
 ```
 
 ---
@@ -218,6 +221,6 @@ El desarrollador no se responsabiliza por el uso indebido de este software.
 
 **Lucas Villagra** — Cybersecurity Analyst, Ethical Hacker · AI Orchestrator · NOA, Argentina
 
-[![Portfolio](https://img.shields.io/badge/Portfolio-lucas18062025.github.io-0f172a?style=flat-square&logo=github)](https://lucas18062025.github.io/Portafolio/)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-lucas--villagra-0a66c2?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/lucas-villagra-9b5097147/)
+[![Portfolio](https://img.shields.io/badge/Portfolio-portafolio.lucaslean1806-0f172a?style=flat-square&logo=github)](https://portafolio.lucaslean1806.workers.dev/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-lucas--villagra--cybersecurity-0a66c2?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/lucas-villagra-cybersecurity)
 [![Google Cybersecurity](https://img.shields.io/badge/Google-Cybersecurity%20Certificate-4285f4?style=flat-square&logo=google)](https://www.coursera.org/professional-certificates/google-cybersecurity)

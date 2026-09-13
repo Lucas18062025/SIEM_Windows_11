@@ -3,7 +3,7 @@
 vuln_hp.py — Escáner de servicios + búsqueda de CVEs
 =====================================================
 Desarrollado por: Lucas Villagra
-Portfolio: https://lucas18062025.github.io/Portafolio/
+Portfolio: https://portafolio.lucaslean1806.workers.dev/
 
 Requisitos:
     - nmap instalado y en el PATH
@@ -42,7 +42,7 @@ load_dotenv()
 CONTACTO = {
     "nombre"   : os.getenv("CONTACT_NOMBRE",    "Lucas Villagra"),
     "portfolio": os.getenv("CONTACT_PORTFOLIO", "https://portafolio.lucaslean1806.workers.dev/"),
-    "linkedin" : os.getenv("CONTACT_LINKEDIN",  "https://www.linkedin.com/in/lucas-villagra-9b5097147/"),
+    "linkedin" : os.getenv("CONTACT_LINKEDIN",  "https://www.linkedin.com/in/lucas-villagra-cybersecurity/"),
 }
 
 # ── API NVD desde .env ───────────────────────────────────────

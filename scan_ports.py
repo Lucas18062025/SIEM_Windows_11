@@ -16,7 +16,7 @@ load_dotenv()
 
 CONTACT_NOMBRE = os.getenv("CONTACT_NOMBRE", "Lucas Villagra")
 CONTACT_PORTFOLIO = os.getenv("CONTACT_PORTFOLIO", "https://portafolio.lucaslean1806.workers.dev/")
-CONTACT_LINKEDIN = os.getenv("CONTACT_LINKEDIN", "https://www.linkedin.com/in/lucas-villagra-9b5097147/")
+CONTACT_LINKEDIN = os.getenv("CONTACT_LINKEDIN", "https://www.linkedin.com/in/lucas-villagra-cybersecurity/")
 
 def banner(ip: str) -> None:
     """Muestra el banner de inicio.

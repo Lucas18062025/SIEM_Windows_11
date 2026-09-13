@@ -10,7 +10,7 @@ readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.10"
 authors = [
-    { name = "Lucas Villagra", url = "https://lucas18062025.github.io/Portafolio/" }
+    { name = "Lucas Villagra", url = "https://portafolio.lucaslean1806.workers.dev/" }
 ]
 keywords = [
     "siem",
@@ -64,7 +64,7 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://lucas18062025.github.io/Portafolio/"
+Homepage = "https://portafolio.lucaslean1806.workers.dev/"
 Repository = "https://github.com/Lucas18062025/SIEM_Windows_11"
 "Bug Tracker" = "https://github.com/Lucas18062025/SIEM_Windows_11/issues"
 Changelog = "https://github.com/Lucas18062025/SIEM_Windows_11/blob/main/CHANGELOG.md"
