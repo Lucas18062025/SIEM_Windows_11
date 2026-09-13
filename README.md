@@ -162,6 +162,13 @@ python vuln_hp.py 192.168.1.1
 
 ---
 
+## 🌐 Demo
+
+Landing del proyecto: **https://siem.lucaslean1806.workers.dev/**
+(`netlify-site/`, deploy Cloudflare Workers desde GitHub).
+
+---
+
 ## ⚙️ Configuración
 
 Toda la configuración se centraliza en `config.yaml` y `.env`:
@@ -199,6 +206,8 @@ SIEM_Windows_11/
 │   ├── log_manager.py       # Rotación y escritura de logs
 │   └── notifier.py          # Integración Telegram
 ├── netlify-site/            # Landing estática (deploy Netlify)
+├── netlify-site/            # Landing estática (deploy Cloudflare Workers)
+├── wrangler.toml            # Deploy: worker `siem` + assets
 ├── .github/                 # Workflows CI
 ├── siem_consola.py          # Entry point del SIEM
 ├── vuln_hp.py               # Escáner de vulnerabilidades + CVEs
