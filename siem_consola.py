@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 
+import logging
 import platform
 import signal
 import sys
@@ -19,6 +20,8 @@ from siem.config import SIEMConfig
 from siem.event_processor import EventProcessor
 from siem.log_manager import LogManager, setup_logging
 from siem.notifier import TelegramNotifier
+
+logger = logging.getLogger("siem.consola")
 
 
 # ── Verificación de plataforma ────────────────────────────
@@ -61,6 +64,60 @@ def show_banner(config: SIEMConfig) -> None:
     print("=" * 60)
 
 
+def run_monitor(
+    processor: EventProcessor,
+    log_manager: LogManager,
+    config: SIEMConfig,
+    shutdown_event: threading.Event,
+) -> int:
+    """Bucle principal de monitoreo (ciclos hasta shutdown).
+
+    F-09: una excepción fuera de ``read_events()`` no hace morir al
+    monitor: se loguea y el ciclo continúa.
+
+    Args:
+        processor: EventProcessor configurado.
+        log_manager: LogManager para cleanup/rotación.
+        config: Configuración del SIEM.
+        shutdown_event: Event para ciclo interrumpible.
+
+    Returns:
+        Cantidad de ciclos ejecutados.
+    """
+    cycle = 0
+    while not shutdown_event.is_set():
+        cycle += 1
+        new_events = 0
+
+        try:
+            # Procesar eventos
+            new_events = processor.process_cycle()
+        except Exception as exc:
+            logger.error("[ERROR] Ciclo %d falló: %s — continuando", cycle, exc)
+            if shutdown_event.is_set():
+                break
+
+        # Limpieza periódica
+        if cycle % config.cleanup_every == 0:
+            processor.cleanup_memory()
+            log_manager.rotate()
+
+        # Status line (F-17: incluye eventos nuevos del ciclo)
+        print(
+            f"[{datetime.now().strftime('%H:%M:%S')}] "
+            f"Ciclo {cycle} | "
+            f"Nuevos: {new_events} | "
+            f"Memoria: {processor.events_in_memory:,} eventos | "
+            f"Próximo en {config.scan_interval}s...",
+            end="\r",
+        )
+
+        # Sleep interruptible (responde a señales inmediatamente)
+        shutdown_event.wait(timeout=config.scan_interval)
+
+    return cycle
+
+
 # ── Main ──────────────────────────────────────────────────
 def main() -> None:
     """Punto de entrada principal del SIEM.
@@ -81,6 +138,22 @@ def main() -> None:
     notifier = TelegramNotifier(config)
     log_manager = LogManager(config)
     processor = EventProcessor(config, notifier, log_manager)
+
+    # 4.5 Verificar credenciales de lectura de event logs (F-01)
+    access = processor.check_credentials()
+    if not all(access.values()):
+        msg_parts = ["<b>⚠️ SIEM — Advertencia de acceso a logs</b>"]
+        for name, ok in access.items():
+            if not ok:
+                msg_parts.append(
+                    f"<b>{notifier.sanitize(name)}:</b> inaccesible "
+                    "(requiere Admin)"
+                )
+        msg_parts.append(
+            "Corre el SIEM como <b>Administrador</b> para monitorear "
+            "el Security log."
+        )
+        notifier.send("\n".join(msg_parts), event_id=0)
 
     # 5. Evento de shutdown (para sleep interruptible)
     shutdown_event = threading.Event()
@@ -111,33 +184,11 @@ def main() -> None:
 
     print("\n[*] Escaneando eventos... (Ctrl+C para detener)\n")
 
-    # 8. Loop principal
+    # 8. Loop principal (F-09: excepciones no detienen el monitor)
     cycle = 0
 
     try:
-        while not shutdown_event.is_set():
-            cycle += 1
-
-            # Procesar eventos
-            new_events = processor.process_cycle()
-
-            # Limpieza periódica
-            if cycle % config.cleanup_every == 0:
-                processor.cleanup_memory()
-                log_manager.rotate()
-
-            # Status line
-            print(
-                f"[{datetime.now().strftime('%H:%M:%S')}] "
-                f"Ciclo {cycle} | "
-                f"Memoria: {processor.events_in_memory:,} eventos | "
-                f"Próximo en {config.scan_interval}s...",
-                end="\r",
-            )
-
-            # Sleep interruptible (responde a señales inmediatamente)
-            shutdown_event.wait(timeout=config.scan_interval)
-
+        cycle = run_monitor(processor, log_manager, config, shutdown_event)
     except KeyboardInterrupt:
         pass  # Manejado por signal_handler
     finally:

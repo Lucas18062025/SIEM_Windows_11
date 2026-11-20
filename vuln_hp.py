@@ -102,6 +102,7 @@ def cargar_cache() -> Dict:
     expirados = len(raw) - len(valido)
     if expirados:
         print(f"[*] Caché: {len(valido)} entries válidas, {expirados} expiradas descartadas")
+        guardar_cache(valido)  # F-15: podar entradas vencidas del disco
     else:
         print(f"[*] Caché cargado: {len(valido)} queries previas ✅")
 
@@ -156,7 +157,8 @@ def verificar_nmap() -> bool:
     except nmap.PortScannerError:
         return False
     except Exception:
-        return True
+        # F-16: antes se devolvía True — se minicalaba errores reales
+        return False
 
 
 # ── Escaneo nmap ─────────────────────────────────────────────
@@ -271,27 +273,73 @@ def find_cve(product: str, version: str) -> List[Dict]:
     if resp is None or resp.status_code != 200:
         return []
 
-    data    = resp.json()
+    try:
+        data = resp.json()
+    except Exception as e:
+        # F-03: HTTP 200 con cuerpo no JSON válido
+        print(f"  ❌ Respuesta inválida de NVD: {e}")
+        return []
+
     results = []
 
-    for v in data.get("vulnerabilities", []):
-        cve_id = v["cve"]["id"]
-        if int(cve_id.split("-")[1]) < 2015:
+    def _paginar(response_data: Dict) -> List[Dict]:
+        """Sigue páginas de NVD (v2.0: ``startIndex``/``totalResults``).
+
+        F-05: máx 5 páginas, IDs únicos, sin avance infinito.
+        """
+        seen: set = set()
+        out: List[Dict] = []
+        for _page in range(5):
+            page_vulns = response_data.get("vulnerabilities", [])
+            for v in page_vulns:
+                cve_id = v.get("cve", {}).get("id")
+                if cve_id and cve_id not in seen:
+                    seen.add(cve_id)
+                    out.append(v)
+            total = response_data.get("totalResults", 0)
+            if not page_vulns or len(out) >= total:
+                break
+            start_index = response_data.get("startIndex", 0) + len(page_vulns)
+            try:
+                resp_next = requests.get(
+                    NVD_API,
+                    params={**params, "startIndex": start_index},
+                    headers=headers,
+                    timeout=20,
+                )
+                if resp_next.status_code != 200:
+                    break
+                response_data = resp_next.json()
+            except Exception as e:
+                print(f"  ⚠️ Error en página siguiente de NVD: {e}")
+                break
+        return out
+
+    for v in _paginar(data):
+        # F-04: validar formato del ID antes de parsear
+        cve_id = v.get("cve", {}).get("id")
+        if not cve_id:
+            continue
+        parts = cve_id.split("-")
+        if len(parts) < 2 or not parts[1].isdigit():
+            continue
+        if int(parts[1]) < 2015:
             continue
 
         score    = None
         severity = None
-        metrics  = v["cve"].get("metrics", {})
+        metrics  = v.get("cve", {}).get("metrics", {})
 
-        if "cvssMetricV31" in metrics:
-            score    = metrics["cvssMetricV31"][0]["cvssData"]["baseScore"]
-            severity = metrics["cvssMetricV31"][0]["cvssData"]["baseSeverity"]
-        elif "cvssMetricV30" in metrics:
-            score    = metrics["cvssMetricV30"][0]["cvssData"]["baseScore"]
-            severity = metrics["cvssMetricV30"][0]["cvssData"]["baseSeverity"]
-        elif "cvssMetricV2" in metrics:
-            score    = metrics["cvssMetricV2"][0]["cvssData"]["baseScore"]
-            severity = metrics["cvssMetricV2"][0]["baseSeverity"]
+        # F-04: NVD puede devolver listas vacías de métricas — sin IndexError
+        for metric_key in ("cvssMetricV31", "cvssMetricV30", "cvssMetricV2"):
+            entry = metrics.get(metric_key)
+            if not entry:
+                continue
+            cvss_data = entry[0].get("cvssData", {})
+            score    = cvss_data.get("baseScore")
+            severity = cvss_data.get("baseSeverity")
+            if score is not None:
+                break
 
         if score is None:
             emoji = "⚪"; label = "SIN SCORE"

@@ -17,8 +17,7 @@ import html
 import logging
 import time
 from collections import deque
-from datetime import datetime
-from typing import TYPE_CHECKING, Deque, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Deque, Dict, List, Tuple
 
 import win32evtlog
 
@@ -91,13 +90,44 @@ class EventProcessor:
                 win32evtlog.EVENTLOG_BACKWARDS_READ
                 | win32evtlog.EVENTLOG_SEQUENTIAL_READ
             )
-            events = win32evtlog.ReadEventLog(handle, flags, 0)
+            # F-02: pedir un chunk limitado (500 eventos) en vez de 0
+            # (= leer TODO el log cada ciclo); BACKWARDS_READ devuelve
+            # primero los más recientes, así el slice conserva los mismos
+            # eventos que antes: los N más nuevos.
+            chunk = win32evtlog.ReadEventLog(handle, flags, 500)
+            events = chunk[: self._config.events_per_read]
             win32evtlog.CloseEventLog(handle)
-            return events[: self._config.events_per_read]
+            return events
 
         except Exception as exc:
             logger.error("[ERROR] No se pudo leer %s: %s", log_type, exc)
             return []
+
+    def check_credentials(self) -> Dict[str, bool]:
+        """Verifica que los logs monitoreados se puedan abrir (lectura).
+
+        El Security log de Windows requiere Privilegios de Administrador
+        (documentación de win32evtlog). Si el SIEM se ejecuta sin Admin,
+        el Security log queda sin monitoreo — F-01.
+
+        Returns:
+            Diccionario ``{log_type: accessible}`` para cada log configurado.
+        """
+        result: Dict[str, bool] = {}
+        for log_type in self._config.event_logs:
+            try:
+                handle = win32evtlog.OpenEventLog("localhost", log_type)
+                win32evtlog.CloseEventLog(handle)
+                result[log_type] = True
+            except Exception as exc:
+                # pwintypes.error (1314 = sin Admin) se loguea y devuelve False
+                logger.error(
+                    "[ERROR] Log inaccesible (Admin requerido?): %s -> %s",
+                    log_type,
+                    exc,
+                )
+                result[log_type] = False
+        return result
 
     # ── Procesamiento ─────────────────────────────────────
     def process_cycle(self) -> int:

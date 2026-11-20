@@ -201,11 +201,12 @@ CONTACT_LINKEDIN=https://www.linkedin.com/in/lucas-villagra-cybersecurity/
 ```
 SIEM_Windows_11/
 ├── siem/                    # Módulos del SIEM
+│   ├── __init__.py           # Inicializador del paquete
 │   ├── config.py            # Gestión de configuración
+│   ├── models.py            # Dataclasses tipadas (EventData, RateLimitState)
 │   ├── event_processor.py   # Procesamiento de eventos Windows
 │   ├── log_manager.py       # Rotación y escritura de logs
 │   └── notifier.py          # Integración Telegram
-├── netlify-site/            # Landing estática (deploy Netlify)
 ├── netlify-site/            # Landing estática (deploy Cloudflare Workers)
 ├── wrangler.toml            # Deploy: worker `siem` + assets
 ├── .github/                 # Workflows CI
@@ -217,7 +218,7 @@ SIEM_Windows_11/
 ├── requirements.txt         # Dependencias Python
 ├── pyproject.toml           # Metadata del proyecto
 ├── .env.example             # Template de variables de entorno (.env nunca se commitea)
-├── netlify.toml             # Config de deploy de la landing
+├── tests/                   # Suite de pruebas unitarias
 ├── .gitignore
 ├── CHANGELOG.md
 └── LICENSE

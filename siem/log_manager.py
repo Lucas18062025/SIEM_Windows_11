@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import gzip
 import logging
-import os
 import shutil
 import time
 from datetime import datetime
@@ -165,6 +164,12 @@ class LogManager:
 
             for filepath in directory.iterdir():
                 if not filepath.is_file():
+                    continue
+
+                # F-06: siem.log activo — manejado por RotatingFileHandler
+                # (abierto); comprimirlo/eliminarlo genera pérdida de datos
+                # del log actual (en Windows: PermissionError por handle).
+                if filepath.name == "siem.log":
                     continue
 
                 try:

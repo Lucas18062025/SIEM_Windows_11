@@ -58,21 +58,6 @@ def resolver_objetivo(objetivo: str) -> str:
     except socket.gaierror:
         raise ValueError(f"No se pudo resolver '{objetivo}' como IP ni hostname.")
 
-def es_ip_valida(ip: str) -> bool:
-    """Verifica si una cadena es IPv4 válida o hostname resoluble.
-
-    Args:
-        ip: La dirección IP u hostname en formato string.
-
-    Returns:
-        True si es válida o resoluble, False en caso contrario.
-    """
-    try:
-        resolver_objetivo(ip)
-        return True
-    except ValueError:
-        return False
-
 def scan_port(ip: str, port: int, timeout: float = 0.5) -> bool:
     """Intenta conectar a un puerto específico en una IP.
     

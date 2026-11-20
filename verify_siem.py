@@ -68,19 +68,34 @@ except Exception as e:
 
 # ── 5. LogManager ────────────────────────────────────────
 try:
+    import logging
+    import tempfile
+    from pathlib import Path
+
     from siem.config import SIEMConfig
     from siem.log_manager import LogManager, setup_logging
-    import logging
 
     cfg = SIEMConfig()
-    setup_logging(cfg)
-    lm = LogManager(cfg)
+    # F-18: los tests solo escriben a directorios temporales
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+        cfg.logs_dir = tmp / "Logs"
+        cfg.alerts_dir = tmp / "Alertas"
+        cfg.logs_dir.mkdir(parents=True)
+        cfg.alerts_dir.mkdir(parents=True)
+        setup_logging(cfg)
+        lm = LogManager(cfg)
 
-    lm.write_event("TEST verificacion SIEM v4.0", is_alert=False)
-    lm.write_event("TEST ALERTA verificacion v4.0", is_alert=True)
+        lm.write_event("TEST verificacion SIEM v4.0", is_alert=False)
+        lm.write_event("TEST ALERTA verificacion v4.0", is_alert=True)
 
-    stats = lm.get_stats()
-    assert stats["total_files"] >= 2
+        stats = lm.get_stats()
+        assert stats["total_files"] >= 2
+
+        # F-18: liberar el handle de siem.log antes del cleanup temporal
+        for handler in logging.getLogger("siem").handlers:
+            handler.close()
+        logging.getLogger("siem").handlers.clear()
 
     print(f"✅ LogManager OK — {stats['total_files']} archivos, {stats['total_size_mb']} MB")
 except Exception as e:

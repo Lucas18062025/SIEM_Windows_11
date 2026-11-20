@@ -73,6 +73,9 @@ class SIEMConfig:
         with open(config_path, "r", encoding="utf-8") as f:
             self._raw: Dict[str, Any] = yaml.safe_load(f)
 
+        # Validar estructura (F-08): config.yaml vacío/inválido
+        self._validate_config(self._raw)
+
         # Validar y cargar secrets
         self._load_secrets()
 
@@ -86,6 +89,41 @@ class SIEMConfig:
 
         # Crear directorios necesarios
         self._ensure_directories()
+
+    # ── Validación de config ──────────────────────────────
+    @staticmethod
+    def _validate_config(raw: Dict[str, Any]) -> None:
+        """Valida los valores numéricos de ``timing``.
+
+        F-08: sin esto, un ``config.yaml`` vacío da ``AttributeError`` y
+        ``cleanup_every_n_cycles: 0`` da ``ZeroDivisionError`` en el loop
+        de ``siem_consola``; y ``scan_interval_seconds`` negativo genera
+        busy loop.
+
+        Args:
+            raw: Configuración cruda del YAML.
+
+        Raises:
+            ValueError: Si la configuración es vacía o inválida.
+        """
+        if not raw:
+            raise ValueError("config.yaml vacío o inválido")
+        timing = raw.get("timing", {}) or {}
+        try:
+            scan_interval = int(timing.get("scan_interval_seconds", 10))
+            cleanup_every = int(timing.get("cleanup_every_n_cycles", 10))
+            memory_window = int(timing.get("memory_window_seconds", 3600))
+            max_events = int(timing.get("max_events_in_memory", 50000))
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"timing: valor no numérico ({exc})") from exc
+        if scan_interval < 0:
+            raise ValueError("timing.scan_interval_seconds debe ser >= 0")
+        if cleanup_every < 1:
+            raise ValueError("timing.cleanup_every_n_cycles debe ser >= 1")
+        if memory_window <= 0:
+            raise ValueError("timing.memory_window_seconds debe ser > 0")
+        if max_events <= 0:
+            raise ValueError("timing.max_events_in_memory debe ser > 0")
 
     # ── Secrets ───────────────────────────────────────────
     def _load_secrets(self) -> None:

@@ -7,7 +7,30 @@ y el versionado sigue [Semantic Versioning](https://semver.org/lang/es/).
 
 ---
 
-## [4.0.0] — 2025-Q4
+## [Unreleased] — Auditoría integral (2026-11-20)
+
+Hallazgos reales (ver `AUDIT_REPORTE_INTEGRAL_SIEM_Windows_11.md`): F-01..F-19.
+Roadmap ejecutado en esta auditoría.
+
+### Corregido
+- `siem/event_processor.py`: `read_events()` — lectura limitada (chunk 500) en lugar de leer el log completo cada ciclo — F-02
+- `siem/event_processor.py`: nuevo `check_credentials()` — verificación de permisos de lectura de logs (Admin) — F-01
+- `siem_consola.py`: `run_monitor()` — loop con `except Exception` que no mata el monitor; status incluye eventos nuevos — F-09, F-17
+- `siem_consola.py`: alerta de advertencia si un log monitorizado no es legible — F-01
+- `siem/config.py`: `_validate_config()` — validación de `timing` (vacío, ceros, negativos) — F-08
+- `siem/log_manager.py`: `rotate()` excluye el `siem.log` activo — F-06
+- `vuln_hp.py`: `find_cve()` — `resp.json()` protegido; IDs y métricas NVD validados; paginación — F-03, F-04, F-05
+- `vuln_hp.py`: `verificar_nmap()` — no devuelve True ante errores genéricos — F-16
+- `vuln_hp.py`: `cargar_cache()` — poda de entradas vencidas — F-15
+- `scan_ports.py`: removido `es_ip_valida()` sin uso — F-10
+- `siem/log_manager.py`, `siem/event_processor.py`: removidos imports sin uso — F-11
+- `pyproject.toml`: removido `python-telegram-bot` (no usado; notifier usa `requests`) — F-19
+- `verify_siem.py`: Test 5 — logs de prueba a directorio temporal — F-18
+- **Tests:** suite unitaria nueva `tests/` (38 pruebas, `python -m unittest discover -s tests`) — F-07
+
+---
+
+## [4.0.0] — 2026-Q4
 
 ### Agregado
 - Arquitectura modular completa: `siem/config.py`, `siem/event_processor.py`, `siem/log_manager.py`, `siem/notifier.py`
